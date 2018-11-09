@@ -18,11 +18,12 @@ namespace SubscriberOne
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "listings",
-                                 durable: false,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
+                    channel.ExchangeDeclare(exchange: "listings", type: "fanout");
+
+                    var queueName = channel.QueueDeclare().QueueName;
+                    channel.QueueBind(queue: queueName,
+                                      exchange: "listings",
+                                      routingKey: "");
 
                     var consumer = new EventingBasicConsumer(channel);
                     consumer.Received += (model, ea) =>
@@ -32,7 +33,7 @@ namespace SubscriberOne
                         var obj = JsonConvert.DeserializeObject<ListingUpdatedEvent>(message);
                         Console.WriteLine(" [x] Received {0}", JsonConvert.SerializeObject(obj));
                     };
-                    channel.BasicConsume(queue: "listings",
+                    channel.BasicConsume(queue: queueName,
                                          autoAck: true,
                                          consumer: consumer);
                     Console.WriteLine(" Press [enter] to exit.");
