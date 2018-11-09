@@ -4,3 +4,6 @@ Seeing how we can communicate between independent systems in a microservice arch
 ## Setup
 1. Install RabbitMQ via docker:
 > docker run -d --hostname my-rabbit --name some-rabbit -p 15672:15672 -p 5672:5672 rabbitmq:3-management
+
+2. UI can be viewed via management console:
+> http://localhost:15672

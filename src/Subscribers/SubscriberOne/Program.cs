@@ -1,5 +1,7 @@
-﻿using RabbitMQ.Client;
+﻿using Newtonsoft.Json;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SubscriberOne.Events;
 using System;
 using System.Text;
 
@@ -16,7 +18,7 @@ namespace SubscriberOne
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "hello",
+                    channel.QueueDeclare(queue: "listings",
                                  durable: false,
                                  exclusive: false,
                                  autoDelete: false,
@@ -27,9 +29,10 @@ namespace SubscriberOne
                     {
                         var body = ea.Body;
                         var message = Encoding.UTF8.GetString(body);
-                        Console.WriteLine(" [x] Received {0}", message);
+                        var obj = JsonConvert.DeserializeObject<ListingUpdatedEvent>(message);
+                        Console.WriteLine(" [x] Received {0}", JsonConvert.SerializeObject(obj));
                     };
-                    channel.BasicConsume(queue: "hello",
+                    channel.BasicConsume(queue: "listings",
                                          autoAck: true,
                                          consumer: consumer);
                     Console.WriteLine(" Press [enter] to exit.");

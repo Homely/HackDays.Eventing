@@ -1,4 +1,6 @@
-﻿using RabbitMQ.Client;
+﻿using Newtonsoft.Json;
+using Publisher.Events;
+using RabbitMQ.Client;
 using System;
 using System.Text;
 using System.Threading;
@@ -16,22 +18,29 @@ namespace Publisher
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "hello",
+                    channel.QueueDeclare(queue: "listings",
                                  durable: false,
                                  exclusive: false,
                                  autoDelete: false,
                                  arguments: null);
 
-                    string message = "Hello World!";
-                    var body = Encoding.UTF8.GetBytes(message);
+                    var listingCreatedEvent = new ListingCreatedOrUpdatedEvent
+                    {
+                        ListingId = 11,
+                        EventType = EventType.Created,
+                        Title = "Brand new apartment!"
+                    };
+
+                    var msg = JsonConvert.SerializeObject(listingCreatedEvent);
+                    var body = Encoding.UTF8.GetBytes(msg);
 
                     while (true)
                     {
                         channel.BasicPublish(exchange: "",
-                                             routingKey: "hello",
+                                             routingKey: "listings",
                                              basicProperties: null,
                                              body: body);
-                        Console.WriteLine(" [x] Sent {0}", message);
+                        Console.WriteLine(" [x] Sent {0}", msg);
 
                         Thread.Sleep(1000);
                     }
