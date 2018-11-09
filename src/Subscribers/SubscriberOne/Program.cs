@@ -20,7 +20,11 @@ namespace SubscriberOne
                 {
                     channel.ExchangeDeclare(exchange: "listings", type: "direct");
 
-                    var queueName = channel.QueueDeclare().QueueName;
+                    var queueName = channel.QueueDeclare(queue: "listingq",
+                        durable: true,
+                     exclusive: false,
+                     autoDelete: false,
+                     arguments: null).QueueName;
                     channel.QueueBind(queue: queueName,
                                       exchange: "listings",
                                       routingKey: "ListingCreatedOrUpdatedEvent");
