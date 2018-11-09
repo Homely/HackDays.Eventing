@@ -18,15 +18,12 @@ namespace Publisher
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "listings",
-                                 durable: false,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
-
+                    channel.ExchangeDeclare(exchange: "listings", type: "fanout");
+                    
                     var listingCreatedEvent = new ListingCreatedOrUpdatedEvent
                     {
                         ListingId = 11,
+                        Price = 450000,
                         EventType = EventType.Created,
                         Title = "Brand new apartment!"
                     };
@@ -36,8 +33,8 @@ namespace Publisher
 
                     while (true)
                     {
-                        channel.BasicPublish(exchange: "",
-                                             routingKey: "listings",
+                        channel.BasicPublish(exchange: "listings",
+                                             routingKey: "",
                                              basicProperties: null,
                                              body: body);
                         Console.WriteLine(" [x] Sent {0}", msg);
