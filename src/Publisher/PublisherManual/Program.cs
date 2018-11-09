@@ -18,12 +18,8 @@ namespace PublisherManual
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "listings",
-                                 durable: false,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
-
+                    channel.ExchangeDeclare(exchange: "listings", type: "fanout");
+                        
                     while (true)
                     {
                         double eventType = 0;
@@ -57,10 +53,11 @@ namespace PublisherManual
                         var json = JsonConvert.SerializeObject(listingCreatedEvent);
                         var body = Encoding.UTF8.GetBytes(json);
 
-                        channel.BasicPublish(exchange: "",
-                                             routingKey: "listings",
+                        channel.BasicPublish(exchange: "listings",
+                                             routingKey: "",
                                              basicProperties: null,
                                              body: body);
+
                         Console.WriteLine($" [{DateTime.UtcNow}] Sent {json}");
 
                         Thread.Sleep(1000);
