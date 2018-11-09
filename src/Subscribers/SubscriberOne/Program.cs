@@ -18,12 +18,12 @@ namespace SubscriberOne
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.ExchangeDeclare(exchange: "listings", type: "fanout");
+                    channel.ExchangeDeclare(exchange: "listings", type: "direct");
 
                     var queueName = channel.QueueDeclare().QueueName;
                     channel.QueueBind(queue: queueName,
                                       exchange: "listings",
-                                      routingKey: "");
+                                      routingKey: "ListingCreatedOrUpdatedEvent");
 
                     var consumer = new EventingBasicConsumer(channel);
                     consumer.Received += (model, ea) =>
