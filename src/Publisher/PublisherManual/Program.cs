@@ -18,7 +18,7 @@ namespace PublisherManual
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.ExchangeDeclare(exchange: "listings", type: "direct");
+                    channel.ExchangeDeclare(exchange: "listings", type: "fanout");
                         
                     while (true)
                     {

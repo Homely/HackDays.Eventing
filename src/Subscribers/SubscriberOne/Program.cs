@@ -18,9 +18,9 @@ namespace SubscriberOne
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.ExchangeDeclare(exchange: "listings", type: "direct");
+                    channel.ExchangeDeclare(exchange: "listings", type: "fanout");
 
-                    var queueName = channel.QueueDeclare(queue: "listingq",
+                    var queueName = channel.QueueDeclare(queue: "queueone",
                         durable: true,
                      exclusive: false,
                      autoDelete: false,
